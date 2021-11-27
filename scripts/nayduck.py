@@ -54,6 +54,11 @@ def _parse_args():
                         '-l',
                         action='store_true',
                         help='Run tests locally.')
+    parser.add_argument(
+        '--dry-run',
+        '-n',
+        action='store_true',
+        help='Prints list of tests to execute, without doing anything')
     args = parser.parse_args()
 
     return args
@@ -241,6 +246,11 @@ def run_remotely(args, tests):
         'sha': args.sha or get_curent_sha().strip(),
         'tests': list(tests)
     }
+    if args.dry_run:
+        for test in post['tests']:
+            print(test)
+        return
+
     while True:
         print('Sending request ...')
         res = requests.post(NAYDUCK_BASE_HREF + '/api/run/new',
