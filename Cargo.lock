@@ -2363,6 +2363,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "lru"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f374d42cdfc1d7dbf3d3dec28afab2eb97ffbf43a3234d795b5986dbf4b90ba"
+dependencies = [
+ "hashbrown",
+]
+
+[[package]]
 name = "mach"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2854,13 +2863,13 @@ dependencies = [
  "byteorder",
  "bytes",
  "bytesize",
- "cached",
  "chrono",
  "conqueue",
  "deepsize",
  "delay-detector",
  "futures",
  "lazy_static",
+ "lru",
  "near-actix-test-utils",
  "near-chain",
  "near-crypto",
