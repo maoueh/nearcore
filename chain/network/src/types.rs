@@ -836,7 +836,7 @@ pub enum NetworkRequests {
     /// (Unit tests) Fetch current routing table.
     FetchRoutingTable,
     /// Data to sync routing table from active peer.
-    RoutingTableSync {
+    SyncRoutingTable {
         peer_id: PeerId,
         routing_table_sync: RoutingTableSync,
     },

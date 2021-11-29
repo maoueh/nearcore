@@ -97,7 +97,7 @@ fn test_infinite_loop() {
             make_peer_manager("test2", port2, vec![("test1", port1)], 10);
         let pm1 = pm1.start();
         let pm2 = pm2.start();
-        let request1 = NetworkRequests::RoutingTableSync {
+        let request1 = NetworkRequests::SyncRoutingTable {
             peer_id: peer_id1.clone(),
             routing_table_sync: RoutingTableSync::from_account(AnnounceAccount {
                 account_id: "near".parse().unwrap(),
@@ -106,7 +106,7 @@ fn test_infinite_loop() {
                 signature: Default::default(),
             }),
         };
-        let request2 = NetworkRequests::RoutingTableSync {
+        let request2 = NetworkRequests::SyncRoutingTable {
             peer_id: peer_id1.clone(),
             routing_table_sync: RoutingTableSync::from_account(AnnounceAccount {
                 account_id: "near".parse().unwrap(),

@@ -960,7 +960,7 @@ impl StreamHandler<Result<Vec<u8>, ReasonForBan>> for PeerActor {
                 .spawn(ctx),
             (_, PeerStatus::Ready, PeerMessage::RoutingTableSync(sync_data)) => {
                 self.peer_manager_addr.do_send(ActixMessageWrapper::new_without_size(
-                    PeerManagerMessageRequest::NetworkRequests(NetworkRequests::RoutingTableSync {
+                    PeerManagerMessageRequest::NetworkRequests(NetworkRequests::SyncRoutingTable {
                         peer_id: self.peer_id().unwrap(),
                         routing_table_sync: sync_data,
                     }),

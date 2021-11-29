@@ -1790,7 +1790,7 @@ impl PeerManagerActor {
             NetworkRequests::FetchRoutingTable => {
                 NetworkResponses::RoutingTableInfo(self.routing_table_view.info())
             }
-            NetworkRequests::RoutingTableSync { peer_id, routing_table_sync } => {
+            NetworkRequests::SyncRoutingTable { peer_id, routing_table_sync } => {
                 // Process edges and add new edges to the routing table. Also broadcast new edges.
                 let (edges, accounts) = routing_table_sync.unpack();
 

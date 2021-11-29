@@ -969,7 +969,7 @@ pub fn setup_mock_all_validators(
                             };
                         }
                         NetworkRequests::ForwardTx(_, _)
-                        | NetworkRequests::RoutingTableSync { .. }
+                        | NetworkRequests::SyncRoutingTable { .. }
                         | NetworkRequests::FetchRoutingTable
                         | NetworkRequests::PingTo(_, _)
                         | NetworkRequests::FetchPingPongInfo
