@@ -330,11 +330,11 @@ impl PeerManagerActor {
             self.routing_table_view.add_account(account.clone());
         }
 
-        let sync_routing_table = SyncRoutingTable::from_accounts(accounts);
-
         self.broadcast_message(
             ctx,
-            SendMessage { message: PeerMessage::RoutingTableSync(sync_routing_table) },
+            SendMessage {
+                message: PeerMessage::RoutingTableSync(SyncRoutingTable::from_accounts(accounts)),
+            },
         )
     }
 
