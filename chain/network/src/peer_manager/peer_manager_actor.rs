@@ -322,9 +322,10 @@ impl PeerManagerActor {
         ctx: &mut Context<PeerManagerActor>,
         accounts: Vec<AnnounceAccount>,
     ) {
-        if !accounts.is_empty() {
-            debug!(target: "network", "{:?} Received new accounts: {:?}", self.config.account_id, accounts);
+        if accounts.is_empty() {
+            return;
         }
+        debug!(target: "network", "{:?} Received new accounts: {:?}", self.config.account_id, accounts);
         for account in accounts.iter() {
             self.routing_table_view.add_account(account.clone());
         }
