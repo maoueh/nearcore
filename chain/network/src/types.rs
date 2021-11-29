@@ -286,11 +286,6 @@ impl SyncRoutingTable {
     pub fn from_accounts(accounts: Vec<AnnounceAccount>) -> Self {
         Self::new(Vec::new(), accounts)
     }
-
-    /// Is empty.
-    pub(crate) fn is_empty(&self) -> bool {
-        self.edges.is_empty() && self.accounts.is_empty()
-    }
 }
 
 /// Warning, position of each message type in this enum defines the protocol due to serialization.

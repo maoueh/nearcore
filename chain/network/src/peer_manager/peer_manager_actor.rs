@@ -303,10 +303,12 @@ impl PeerManagerActor {
                 Ok(RoutingTableMessagesResponse::AddVerifiedEdgesResponse(filtered_edges)) => {
                     // Broadcast new edges to all other peers.
                     if broadcast_edges && act.adv_helper.can_broadcast_edges() {
-                        let new_data = SyncRoutingTable::from_edges(filtered_edges);
+                        let sync_routing_table = SyncRoutingTable::from_edges(filtered_edges);
                         act.broadcast_message(
                             ctx,
-                            SendMessage { message: PeerMessage::RoutingTableSync(new_data) },
+                            SendMessage {
+                                message: PeerMessage::RoutingTableSync(sync_routing_table),
+                            },
                         )
                     }
                 }
@@ -327,14 +329,12 @@ impl PeerManagerActor {
             self.routing_table_view.add_account(account.clone());
         }
 
-        let new_data = SyncRoutingTable::from_accounts(accounts);
+        let sync_routing_table = SyncRoutingTable::from_accounts(accounts);
 
-        if !new_data.is_empty() {
-            self.broadcast_message(
-                ctx,
-                SendMessage { message: PeerMessage::RoutingTableSync(new_data) },
-            )
-        };
+        self.broadcast_message(
+            ctx,
+            SendMessage { message: PeerMessage::RoutingTableSync(sync_routing_table) },
+        )
     }
 
     /// `update_routing_table_trigger` schedule updating routing table to `RoutingTableActor`
