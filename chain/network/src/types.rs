@@ -266,44 +266,30 @@ impl From<HandshakeV2> for Handshake {
 /// Contains metadata used for routing messages to particular `PeerId` or `AccountId`.
 #[cfg_attr(feature = "deepsize_feature", derive(DeepSizeOf))]
 #[derive(BorshSerialize, BorshDeserialize, PartialEq, Eq, Clone, Debug)]
-pub struct RoutingTableSync {
+pub struct SyncRoutingTable {
     /// List of known edges from `RoutingTableActor::edges_info`.
-    edges: Vec<Edge>,
+    pub(crate) edges: Vec<Edge>,
     /// List of known `account_id` to `PeerId` mappings.
     /// Useful for `send_message_to_account` method, to route message to particular account.
-    accounts: Vec<AnnounceAccount>,
+    pub(crate) accounts: Vec<AnnounceAccount>,
 }
 
-impl RoutingTableSync {
+impl SyncRoutingTable {
     pub(crate) fn new(edges: Vec<Edge>, accounts: Vec<AnnounceAccount>) -> Self {
         Self { edges, accounts }
     }
 
     pub(crate) fn from_edges(edges: Vec<Edge>) -> Self {
-        Self { edges, accounts: Default::default() }
+        Self::new(edges, Vec::new())
     }
 
-    pub(crate) fn from_accounts(accounts: Vec<AnnounceAccount>) -> Self {
-        Self { edges: Default::default(), accounts }
-    }
-
-    /// Construct from a single edge.
-    pub(crate) fn from_edge(edge: Edge) -> Self {
-        Self { edges: vec![edge], accounts: Default::default() }
-    }
-
-    /// Construct from account.
-    pub fn from_account(account: AnnounceAccount) -> Self {
-        Self { edges: Vec::new(), accounts: vec![account] }
+    pub fn from_accounts(accounts: Vec<AnnounceAccount>) -> Self {
+        Self::new(Vec::new(), accounts)
     }
 
     /// Is empty.
     pub(crate) fn is_empty(&self) -> bool {
         self.edges.is_empty() && self.accounts.is_empty()
-    }
-
-    pub(crate) fn unpack(self) -> (Vec<Edge>, Vec<AnnounceAccount>) {
-        (self.edges, self.accounts)
     }
 }
 
@@ -329,7 +315,7 @@ pub enum PeerMessage {
     /// When a failed nonce is used by some peer, this message is sent back as evidence.
     LastEdge(Edge),
     /// Contains accounts and edge information.
-    RoutingTableSync(RoutingTableSync),
+    RoutingTableSync(SyncRoutingTable),
     RequestUpdateNonce(EdgeInfo),
     ResponseUpdateNonce(Edge),
 
@@ -838,7 +824,7 @@ pub enum NetworkRequests {
     /// Data to sync routing table from active peer.
     SyncRoutingTable {
         peer_id: PeerId,
-        routing_table_sync: RoutingTableSync,
+        sync_routing_table: SyncRoutingTable,
     },
 
     RequestUpdateNonce(PeerId, EdgeInfo),
@@ -1129,7 +1115,7 @@ mod tests {
         assert_size!(Handshake);
         assert_size!(Ping);
         assert_size!(Pong);
-        assert_size!(RoutingTableSync);
+        assert_size!(SyncRoutingTable);
         assert_size!(SendMessage);
         assert_size!(Consolidate);
         assert_size!(FullPeerInfo);

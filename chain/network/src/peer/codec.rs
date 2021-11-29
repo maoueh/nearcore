@@ -177,7 +177,7 @@ mod test {
     use crate::peer::codec::{is_forward_transaction, Codec, NETWORK_MESSAGE_MAX_SIZE_BYTES};
     use crate::routing::edge::EdgeInfo;
     use crate::types::{
-        Handshake, HandshakeFailureReason, HandshakeV2, PeerMessage, RoutingTableSync,
+        Handshake, HandshakeFailureReason, HandshakeV2, PeerMessage, SyncRoutingTable,
     };
     use crate::PeerInfo;
     use borsh::BorshDeserialize;
@@ -378,7 +378,7 @@ mod test {
         let network_sk = SecretKey::from_random(KeyType::ED25519);
         let signature = sk.sign(vec![].as_slice());
         let msg =
-            PeerMessage::RoutingTableSync(RoutingTableSync::from_accounts(vec![AnnounceAccount {
+            PeerMessage::RoutingTableSync(SyncRoutingTable::from_accounts(vec![AnnounceAccount {
                 account_id: "test1".parse().unwrap(),
                 peer_id: PeerId::new(network_sk.public_key()),
                 epoch_id: EpochId::default(),
