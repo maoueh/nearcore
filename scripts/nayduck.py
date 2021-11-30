@@ -182,7 +182,7 @@ def github_auth(code_path: pathlib.Path):
     return code
 
 
-def run_locally(tests):
+def run_locally(args, tests):
     for test in tests:
         # See nayduck specs at https://github.com/near/nayduck/blob/master/lib/testspec.py
         fields = test.split()
@@ -220,6 +220,9 @@ def run_locally(tests):
             print(f'Unrecognised test category ‘{fields[0]}’', file=sys.stderr)
             continue
         print("RUNNING COMMAND cwd=%s cmd = %s", (cwd, cmd))
+        if args.dry_run:
+            print(" ".join(cmd))
+            return
         subprocess.check_call(cmd, cwd=cwd)
 
 
@@ -241,15 +244,16 @@ def run_remotely(args, tests):
     else:
         code = github_auth(code_path)
 
+    if args.dry_run:
+        for test in tests:
+            print(test)
+        return
+
     post = {
         'branch': args.branch or get_current_branch().strip(),
         'sha': args.sha or get_curent_sha().strip(),
         'tests': list(tests)
     }
-    if args.dry_run:
-        for test in post['tests']:
-            print(test)
-        return
 
     while True:
         print('Sending request ...')
@@ -280,7 +284,7 @@ def main():
         tests = list(read_tests_from_file(pathlib.Path(args.test_file)))
 
     if args.run_locally:
-        run_locally(tests)
+        run_locally(args, tests)
     else:
         run_remotely(args, tests)
 
