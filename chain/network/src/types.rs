@@ -299,7 +299,6 @@ impl SyncData {
     strum::EnumVariantNames,
 )]
 // TODO(#1313): Use Box
-#[allow(clippy::large_enum_variant)]
 pub enum PeerMessage {
     Handshake(Handshake),
     HandshakeFailure(PeerInfo, HandshakeFailureReason),
@@ -330,7 +329,7 @@ pub enum PeerMessage {
     EpochSyncRequest(EpochId),
     EpochSyncResponse(EpochSyncResponse),
     EpochSyncFinalizationRequest(EpochId),
-    EpochSyncFinalizationResponse(EpochSyncFinalizationResponse),
+    EpochSyncFinalizationResponse(Box<EpochSyncFinalizationResponse>),
 
     #[cfg(feature = "protocol_feature_routing_exchange_algorithm")]
     RoutingTableSyncV2(RoutingSyncV2),
