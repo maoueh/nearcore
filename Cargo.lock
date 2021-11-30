@@ -2909,7 +2909,6 @@ dependencies = [
  "deepsize",
  "near-crypto",
  "near-primitives",
- "serde",
  "strum",
  "tokio",
  "tracing",
