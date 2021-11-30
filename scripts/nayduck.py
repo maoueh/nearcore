@@ -193,10 +193,11 @@ def run_locally(args, tests):
 
         ignored = fields[1:index]
         del fields[1:index]
-        message = f'Running ‘{"".join(fields)}’'
-        if ignored:
-            message = f'{message} (ignoring flags ‘{"".join(ignored)}`)'
-        print(message)
+        if not args.dry_run:
+            message = f'Running ‘{"".join(fields)}’'
+            if ignored:
+                message = f'{message} (ignoring flags ‘{"".join(ignored)}`)'
+            print(message)
 
         if fields[0] == 'expensive':
             # TODO --test doesn't work
@@ -219,10 +220,10 @@ def run_locally(args, tests):
         else:
             print(f'Unrecognised test category ‘{fields[0]}’', file=sys.stderr)
             continue
-        print("RUNNING COMMAND cwd=%s cmd = %s", (cwd, cmd))
         if args.dry_run:
             print(" ".join(cmd))
-            return
+            continue
+        print("RUNNING COMMAND cwd=%s cmd = %s", (cwd, cmd))
         subprocess.check_call(cmd, cwd=cwd)
 
 
