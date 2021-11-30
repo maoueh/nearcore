@@ -327,7 +327,7 @@ pub enum PeerMessage {
     HandshakeV2(HandshakeV2),
 
     EpochSyncRequest(EpochId),
-    EpochSyncResponse(Box<EpochSyncResponse>),
+    EpochSyncResponse(EpochSyncResponse),
     EpochSyncFinalizationRequest(EpochId),
     EpochSyncFinalizationResponse(EpochSyncFinalizationResponse),
 
