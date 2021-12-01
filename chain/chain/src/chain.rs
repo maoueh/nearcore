@@ -151,11 +151,15 @@ impl OrphanBlockPool {
     }
 
     fn add(&mut self, orphan: Orphan) {
-        let height_hashes =
-            self.height_idx.entry(orphan.block.header().height()).or_insert_with(std::vec::Vec::new);
+        let height_hashes = self
+            .height_idx
+            .entry(orphan.block.header().height())
+            .or_insert_with(std::vec::Vec::new);
         height_hashes.push(*orphan.block.hash());
-        let prev_hash_entries =
-            self.prev_hash_idx.entry(*orphan.block.header().prev_hash()).or_insert_with(std::vec::Vec::new);
+        let prev_hash_entries = self
+            .prev_hash_idx
+            .entry(*orphan.block.header().prev_hash())
+            .or_insert_with(std::vec::Vec::new);
         prev_hash_entries.push(*orphan.block.hash());
         self.orphans.insert(*orphan.block.hash(), orphan);
 
@@ -338,10 +342,8 @@ impl Chain {
                     )?);
                     store_update.save_block_header(genesis.header().clone())?;
                     store_update.save_block(genesis.clone());
-                    store_update.save_block_extra(
-                        genesis.hash(),
-                        BlockExtra { challenges_result: vec![] },
-                    );
+                    store_update
+                        .save_block_extra(genesis.hash(), BlockExtra { challenges_result: vec![] });
 
                     for (chunk_header, state_root) in
                         genesis.chunks().iter().zip(state_roots.iter())
@@ -477,11 +479,7 @@ impl Chain {
             byzantine_assert!(false);
             return Err(e);
         }
-        self.orphans.add(Orphan {
-            block,
-            provenance: Provenance::NONE,
-            added: Clock::instant(),
-        });
+        self.orphans.add(Orphan { block, provenance: Provenance::NONE, added: Clock::instant() });
         Ok(())
     }
 
@@ -729,11 +727,13 @@ impl Chain {
                 {
                     return Err(ErrorKind::InvalidChunk.into());
                 }
-            } else if chunk_header.height_created() == block.header().height() && !runtime_adapter.verify_chunk_header_signature(
+            } else if chunk_header.height_created() == block.header().height()
+                && !runtime_adapter.verify_chunk_header_signature(
                     &chunk_header.clone(),
                     block.header().epoch_id(),
                     block.header().prev_hash(),
-                )? {
+                )?
+            {
                 byzantine_assert!(false);
                 return Err(ErrorKind::InvalidChunk.into());
             }
@@ -872,9 +872,9 @@ impl Chain {
                 // Add validator proposals for given header.
                 let last_finalized_height =
                     chain_update.chain_store_update.get_block_height(header.last_final_block())?;
-                let epoch_manager_update = chain_update.runtime_adapter.add_validator_proposals(
-                    BlockHeaderInfo::new(header, last_finalized_height),
-                )?;
+                let epoch_manager_update = chain_update
+                    .runtime_adapter
+                    .add_validator_proposals(BlockHeaderInfo::new(header, last_finalized_height))?;
                 chain_update.chain_store_update.merge(epoch_manager_update);
                 chain_update.commit()?;
             }
@@ -2314,9 +2314,7 @@ impl Chain {
                         .get_block_merkle_tree_from_ordinal(cur_tree_size)?
                         .get_path()
                         .last()
-                        .ok_or_else(|| {
-                            ErrorKind::Other("Merkle tree node missing".to_string())
-                        })?,
+                        .ok_or_else(|| ErrorKind::Other("Merkle tree node missing".to_string()))?,
                 )
             };
             tree_nodes.insert((index, level), maybe_hash);
@@ -3112,11 +3110,7 @@ impl<'a> ChainUpdate<'a> {
         apply_results: Vec<Result<ApplyChunkResult, Error>>,
     ) -> Result<(), Error> {
         apply_results.into_iter().try_for_each(|result| -> Result<(), Error> {
-            self.process_apply_chunk_result(
-                result?,
-                *block.hash(),
-                *prev_block.hash(),
-            )
+            self.process_apply_chunk_result(result?, *block.hash(), *prev_block.hash())
         })
     }
 
@@ -3249,8 +3243,7 @@ impl<'a> ChainUpdate<'a> {
                     .map_err(|e| {
                         debug!(target: "chain", "Failed to validate chunk extra: {:?}", e);
                         byzantine_assert!(false);
-                        match self.create_chunk_state_challenge(prev_block, block, chunk_header)
-                        {
+                        match self.create_chunk_state_challenge(prev_block, block, chunk_header) {
                             Ok(chunk_state) => {
                                 Error::from(ErrorKind::InvalidChunkState(Box::new(chunk_state)))
                             }
@@ -3869,9 +3862,9 @@ impl<'a> ChainUpdate<'a> {
             self.chain_store_update.get_block_header(last_final_block)?.height()
         };
 
-        let epoch_manager_update = self.runtime_adapter.add_validator_proposals(
-            BlockHeaderInfo::new(block.header(), last_finalized_height),
-        )?;
+        let epoch_manager_update = self
+            .runtime_adapter
+            .add_validator_proposals(BlockHeaderInfo::new(block.header(), last_finalized_height))?;
         self.chain_store_update.merge(epoch_manager_update);
 
         // Add validated block to the db, even if it's not the canonical fork.
@@ -4023,9 +4016,7 @@ impl<'a> ChainUpdate<'a> {
             return Err(ErrorKind::InvalidNextBPHash.into());
         }
 
-        if header.chunk_mask().len() as u64
-            != self.runtime_adapter.num_shards(header.epoch_id())?
-        {
+        if header.chunk_mask().len() as u64 != self.runtime_adapter.num_shards(header.epoch_id())? {
             return Err(ErrorKind::InvalidChunkMask.into());
         }
 
@@ -4468,8 +4459,7 @@ impl<'a> ChainUpdate<'a> {
         debug!(target: "chain", "Verifying challenges {:?}", challenges);
         let mut result = vec![];
         for challenge in challenges.iter() {
-            match validate_challenge(&*self.runtime_adapter, epoch_id, prev_block_hash, challenge)
-            {
+            match validate_challenge(&*self.runtime_adapter, epoch_id, prev_block_hash, challenge) {
                 Ok((hash, account_ids)) => {
                     let is_double_sign = match challenge.body {
                         // If it's double signed block, we don't invalidate blocks just slash.
