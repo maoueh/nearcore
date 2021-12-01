@@ -1698,7 +1698,7 @@ impl<'a> ChainStoreUpdate<'a> {
     #[cfg(feature = "test_features")]
     pub fn adv_save_latest_known(&mut self, height: BlockHeight) -> Result<(), Error> {
         let header = self.get_header_by_height(height)?;
-        let tip = Tip::from_header(&header);
+        let tip = Tip::from_header(header);
         self.chain_store
             .save_latest_known(LatestKnown { height, seen: to_timestamp(Utc::now()) })?;
         self.save_head(&tip)?;
@@ -3412,7 +3412,7 @@ mod tests {
             let mut store_update = chain.mut_store().store_update();
             store_update.save_block(block.clone());
             store_update.inc_block_refcount(block.header().prev_hash()).unwrap();
-            store_update.save_head(&Tip::from_header(&block.header())).unwrap();
+            store_update.save_head(&Tip::from_header(block.header())).unwrap();
             store_update.save_block_header(block.header().clone()).unwrap();
             {
                 let mut store_update = store_update.store().store_update();
@@ -3426,7 +3426,7 @@ mod tests {
                 .chain_store_cache_update
                 .height_to_hashes
                 .insert(i, Some(*block.header().hash()));
-            store_update.save_next_block_hash(&prev_block.hash(), *block.hash());
+            store_update.save_next_block_hash(prev_block.hash(), *block.hash());
             store_update.commit().unwrap();
 
             prev_block = block.clone();
@@ -3441,13 +3441,13 @@ mod tests {
             // epoch didn't change so no data is garbage collected.
             for i in 0..1000 {
                 if i < (iter + 1) * gc_blocks_limit as usize {
-                    assert!(chain.get_block(&blocks[i].hash()).is_err());
+                    assert!(chain.get_block(blocks[i].hash()).is_err());
                     assert!(chain
                         .mut_store()
                         .get_all_block_hashes_by_height(i as BlockHeight)
                         .is_err());
                 } else {
-                    assert!(chain.get_block(&blocks[i].hash()).is_ok());
+                    assert!(chain.get_block(blocks[i].hash()).is_ok());
                     assert!(chain
                         .mut_store()
                         .get_all_block_hashes_by_height(i as BlockHeight)
