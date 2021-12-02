@@ -21,6 +21,8 @@
 //!
 //! Learn more here: <https://docs.near.org/docs/concepts/account#account-id-rules>
 //!
+//! Also see [Error kind precedence](AccountId#error-kind-precedence).
+//!
 //! ## Usage
 //!
 //! ```
@@ -40,7 +42,7 @@
 //!   matches!(
 //!     // no caps
 //!     "MelissaCarver.near".parse::<AccountId>(),
-//!     Err(err) if err.kind().is_invalid()
+//!     Err(err) if err.kind().has_caps_chars()
 //!   )
 //! );
 //!
@@ -48,7 +50,15 @@
 //!   matches!(
 //!     // separators cannot immediately follow each other
 //!     "bob__carol".parse::<AccountId>(),
-//!     Err(err) if err.kind().is_invalid()
+//!     Err(err) if err.kind().has_consecutive_separators()
+//!   )
+//! );
+//!
+//! assert!(
+//!   matches!(
+//!     // cannot begin or end with a separator
+//!     "-damien".parse::<AccountId>(),
+//!     Err(err) if err.kind().has_unterminated_separators()
 //!   )
 //! );
 //!
@@ -56,7 +66,7 @@
 //!   matches!(
 //!     // each part must be alphanumeric only (ƒ is not f)
 //!     "ƒelicia.near".parse::<AccountId>(),
-//!     Err(err) if err.kind().is_invalid()
+//!     Err(err) if err.kind().has_invalid_chars()
 //!   )
 //! );
 //! ```
@@ -85,6 +95,8 @@ pub const MAX_ACCOUNT_ID_LEN: usize = 64;
 ///
 /// [See the crate-level docs for information about validation.](index.html#account-id-rules)
 ///
+/// Also see [Error kind precedence](AccountId#error-kind-precedence).
+///
 /// ## Examples
 ///
 /// ```
@@ -104,7 +116,7 @@ pub const MAX_ACCOUNT_ID_LEN: usize = 64;
 ///   matches!(
 ///     // no caps
 ///     "MelissaCarver.near".parse::<AccountId>(),
-///     Err(err) if err.kind().is_invalid()
+///     Err(err) if err.kind().has_caps_chars()
 ///   )
 /// );
 ///
@@ -112,7 +124,15 @@ pub const MAX_ACCOUNT_ID_LEN: usize = 64;
 ///   matches!(
 ///     // separators cannot immediately follow each other
 ///     "bob__carol".parse::<AccountId>(),
-///     Err(err) if err.kind().is_invalid()
+///     Err(err) if err.kind().has_consecutive_separators()
+///   )
+/// );
+///
+/// assert!(
+///   matches!(
+///     // cannot begin or end with a separator
+///     "-damien".parse::<AccountId>(),
+///     Err(err) if err.kind().has_unterminated_separators()
 ///   )
 /// );
 ///
@@ -120,7 +140,7 @@ pub const MAX_ACCOUNT_ID_LEN: usize = 64;
 ///   matches!(
 ///     // each part must be alphanumeric only (ƒ is not f)
 ///     "ƒelicia.near".parse::<AccountId>(),
-///     Err(err) if err.kind().is_invalid()
+///     Err(err) if err.kind().has_invalid_chars()
 ///   )
 /// );
 /// ```
@@ -232,14 +252,54 @@ impl AccountId {
     /// assert!(
     ///   matches!(
     ///     AccountId::validate("ƒelicia.near"), // fancy ƒ!
-    ///     Err(err) if err.kind().is_invalid()
+    ///     Err(err) if err.kind().has_invalid_chars()
     ///   )
     /// );
     ///
     /// assert!(
     ///   matches!(
     ///     AccountId::validate("MelissaCarver.near"), // no caps
-    ///     Err(err) if err.kind().is_invalid()
+    ///     Err(err) if err.kind().has_caps_chars()
+    ///   )
+    /// );
+    /// ```
+    ///
+    /// ## Error kind precedence
+    ///
+    /// If an Account ID has multiple format violations,
+    /// then the first one to be detected when read from the left
+    /// would be reported.
+    ///
+    /// ### Examples
+    ///
+    /// ```
+    /// use near_account_id::AccountId;
+    ///
+    /// assert!(
+    ///   matches!(
+    ///     AccountId::validate("Tara__ƒelicia."),
+    ///     Err(err) if err.kind().has_caps_chars() // T
+    ///   )
+    /// );
+    ///
+    /// assert!(
+    ///   matches!(
+    ///     AccountId::validate("tara__ƒelicia."),
+    ///     Err(err) if err.kind().has_consecutive_separators() // __
+    ///   )
+    /// );
+    ///
+    /// assert!(
+    ///   matches!(
+    ///     AccountId::validate("taraƒelicia."),
+    ///     Err(err) if err.kind().has_invalid_chars() // ƒ
+    ///   )
+    /// );
+    ///
+    /// assert!(
+    ///   matches!(
+    ///     AccountId::validate("tarafelicia."),
+    ///     Err(err) if err.kind().has_unterminated_separators() // .
     ///   )
     /// );
     /// ```
@@ -258,26 +318,39 @@ impl AccountId {
             // We can safely assume that last char was a separator.
             let mut last_char_is_separator = true;
 
-            for c in account_id.bytes() {
+            for (i, c) in account_id.bytes().enumerate() {
                 let current_char_is_separator = match c {
                     b'a'..=b'z' | b'0'..=b'9' => false,
                     b'-' | b'_' | b'.' => true,
+                    b'A'..=b'Z' => {
+                        return Err(ParseAccountError(
+                            ParseErrorKind::HasCapsChars,
+                            account_id.to_string(),
+                        ))
+                    }
                     _ => {
                         return Err(ParseAccountError(
-                            ParseErrorKind::Invalid,
+                            ParseErrorKind::HasInvalidChars,
                             account_id.to_string(),
                         ))
                     }
                 };
                 if current_char_is_separator && last_char_is_separator {
-                    return Err(ParseAccountError(ParseErrorKind::Invalid, account_id.to_string()));
+                    return Err(ParseAccountError(
+                        if i == 0 {
+                            ParseErrorKind::HasUnterminatedSeparators
+                        } else {
+                            ParseErrorKind::HasConsecutiveSeparators
+                        },
+                        account_id.to_string(),
+                    ));
                 }
                 last_char_is_separator = current_char_is_separator;
             }
 
-            (!last_char_is_separator)
-                .then(|| ())
-                .ok_or_else(|| ParseAccountError(ParseErrorKind::Invalid, account_id.to_string()))
+            (!last_char_is_separator).then(|| ()).ok_or_else(|| {
+                ParseAccountError(ParseErrorKind::HasUnterminatedSeparators, account_id.to_string())
+            })
         }
     }
 
@@ -456,6 +529,33 @@ mod tests {
                 panic!("Valid account id {:?} marked valid", account_id);
             }
         }
+    }
+
+    #[test]
+    fn test_err_kind_classification() {
+        let id = "ErinMoriarty.near".parse::<AccountId>();
+        debug_assert!(matches!(id, Err(ref err) if err.kind().has_caps_chars()), "{:?}", id);
+
+        let id = "-KarlUrban.near".parse::<AccountId>();
+        debug_assert!(
+            matches!(id, Err(ref err) if err.kind().has_unterminated_separators()),
+            "{:?}",
+            id
+        );
+
+        let id = "anthonystarr.".parse::<AccountId>();
+        debug_assert!(
+            matches!(id, Err(ref err) if err.kind().has_unterminated_separators()),
+            "{:?}",
+            id
+        );
+
+        let id = "jack__Quaid.near".parse::<AccountId>();
+        debug_assert!(
+            matches!(id, Err(ref err) if err.kind().has_consecutive_separators()),
+            "{:?}",
+            id
+        );
     }
 
     #[test]

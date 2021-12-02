@@ -24,34 +24,78 @@ impl fmt::Display for ParseAccountError {
 }
 
 /// A list of errors that occur when parsing an invalid Account ID.
+///
+/// Also see [Error kind precedence](crate::AccountId#error-kind-precedence).
 #[non_exhaustive]
 #[derive(Eq, Clone, Debug, PartialEq)]
 pub enum ParseErrorKind {
+    /// The Account ID was too long.
+    ///
+    /// Thrown if the `AccountId` was longer than [`MAX_ACCOUNT_ID_LEN`](crate::MAX_ACCOUNT_ID_LEN).
     TooLong,
+    /// The Account ID was too short.
+    ///
+    /// Thrown if the `AccountId` was longer than [`MIN_ACCOUNT_ID_LEN`](crate::MIN_ACCOUNT_ID_LEN).
     TooShort,
-    Invalid,
+    /// The Account ID has upper-case characters.
+    ///
+    /// Example: `Emily.near`, `jemma.Dover.near`.
+    HasCapsChars,
+    /// The Account ID has separators immediately following each other.
+    ///
+    /// Example: `tyrell__wellick.near`.
+    HasConsecutiveSeparators,
+    /// The Account ID begins or ends with separators.
+    ///
+    /// Example: `_angela_moss_`.
+    HasUnterminatedSeparators,
+    /// The Account ID has invalid characters (non-separating symbol or space).
+    ///
+    /// Example: `ƒelicia.near`, `user@app.com`.
+    HasInvalidChars,
 }
 
 impl ParseErrorKind {
     /// Returns `true` if the Account ID was too long.
+    ///
+    /// Thrown if the `AccountId` was longer than [`MAX_ACCOUNT_ID_LEN`](crate::MAX_ACCOUNT_ID_LEN).
     pub fn is_too_long(&self) -> bool {
         matches!(self, ParseErrorKind::TooLong)
     }
 
     /// Returns `true` if the Account ID was too short.
+    ///
+    /// Thrown if the `AccountId` was longer than [`MIN_ACCOUNT_ID_LEN`](crate::MIN_ACCOUNT_ID_LEN).
     pub fn is_too_short(&self) -> bool {
         matches!(self, ParseErrorKind::TooShort)
     }
 
-    /// Returns `true` if the Account ID was marked invalid.
+    /// Returns `true` if the Account ID has upper-case characters.
     ///
-    /// This can happen for the following reasons:
+    /// Example: `Emily.near`, `jemma.Dover.near`.
+    pub fn has_caps_chars(&self) -> bool {
+        matches!(self, ParseErrorKind::HasCapsChars)
+    }
+
+    /// Returns `true` if the Account ID has separators immediately following each other.
     ///
-    /// - An invalid character was detected (could be an uppercase character, symbol or space).
-    /// - Separators immediately follow each other.
-    /// - Separators begin or end the Account ID.
-    pub fn is_invalid(&self) -> bool {
-        matches!(self, ParseErrorKind::Invalid)
+    /// Example: `tyrell__wellick.near`.
+    pub fn has_consecutive_separators(&self) -> bool {
+        matches!(self, ParseErrorKind::HasConsecutiveSeparators)
+    }
+
+    /// Returns `true` if the Account ID begins or ends with separators.
+    ///
+    /// Example: `_angela_moss_`.
+    pub fn has_unterminated_separators(&self) -> bool {
+        matches!(self, ParseErrorKind::HasUnterminatedSeparators)
+    }
+
+    /// Returns `true` if the Account ID has invalid characters (non-separating symbol or space).
+    ///
+    /// Example: `ƒelicia.near`, `user@app.com`.
+    pub fn has_invalid_chars(&self) -> bool {
+        matches!(self, ParseErrorKind::HasInvalidChars)
     }
 }
 
@@ -60,6 +104,13 @@ impl fmt::Display for ParseErrorKind {
         match self {
             ParseErrorKind::TooLong => write!(f, "the account ID is too long"),
             ParseErrorKind::TooShort => write!(f, "the account ID is too short"),
+            ParseErrorKind::HasCapsChars => write!(f, "the account ID has upper-case characters"),
+            ParseErrorKind::HasConsecutiveSeparators => {
+                write!(f, "the account ID has separators immediately following each other")
+            }
+            ParseErrorKind::HasUnterminatedSeparators => {
+                write!(f, "the account ID begins or ends with a separator")
+            }
             _ => write!(f, "the account ID has an invalid format"),
         }
     }
