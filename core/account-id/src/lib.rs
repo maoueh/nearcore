@@ -323,6 +323,10 @@ impl AccountId {
         Self::new_unvalidated("test")
     }
 
+    pub fn registrar_account() -> Self {
+        Self::new_unvalidated("registrar")
+    }
+
     pub fn system_account() -> Self {
         Self::new_unvalidated("system")
     }

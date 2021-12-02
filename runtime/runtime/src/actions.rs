@@ -746,7 +746,7 @@ mod tests {
             &RuntimeFeesConfig::test(),
             &AccountCreationConfig {
                 min_allowed_top_level_account_length: length,
-                registrar_account_id: "registrar".parse().unwrap(),
+                registrar_account_id: AccountId::registrar_account(),
             },
             &mut account,
             &mut actor_id,
@@ -774,7 +774,7 @@ mod tests {
     #[test]
     fn test_create_account_valid_top_level_by_registrar() {
         let account_id = "bob".parse().unwrap();
-        let predecessor_id = "registrar".parse().unwrap();
+        let predecessor_id = AccountId::registrar_account();
         let action_result = test_action_create_account(account_id, predecessor_id, 11);
         assert!(action_result.result.is_ok());
     }
@@ -817,7 +817,7 @@ mod tests {
                 index: None,
                 kind: ActionErrorKind::CreateAccountOnlyByRegistrar {
                     account_id: account_id,
-                    registrar_account_id: "registrar".parse().unwrap(),
+                    registrar_account_id: AccountId::registrar_account(),
                     predecessor_id: predecessor_id,
                 },
             })
