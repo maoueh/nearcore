@@ -21,7 +21,7 @@ serde_json = "1"
 sha2 = "0.9"
 deepsize = { version = "0.2.0", optional = true }
 
-near-account-id = { path = "../account-id" }
+near-account-id = { path = "../account-id", features = ["static_accounts"] }
 
 [features]
 default = []

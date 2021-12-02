@@ -297,28 +297,32 @@ impl AccountId {
     /// ```
     /// use near_account_id::AccountId;
     ///
-    /// let alice = AccountId::new_unvalidated("alice.near".to_string());
+    /// let alice = AccountId::new_unvalidated("alice.near");
     /// assert!(AccountId::validate(alice.as_ref()).is_ok());
     ///
-    /// let ƒelicia = AccountId::new_unvalidated("ƒelicia.near".to_string());
+    /// let ƒelicia = AccountId::new_unvalidated("ƒelicia.near");
     /// assert!(AccountId::validate(ƒelicia.as_ref()).is_err());
     /// ```
     #[cfg(feature = "internal_unstable")]
     #[deprecated(since = "#4440", note = "AccountId construction without validation is illegal")]
-    pub fn new_unvalidated(account_id: String) -> Self {
-        Self(account_id.into())
+    pub fn new_unvalidated(account_id: impl Into<String>) -> Self {
+        Self(account_id.into().into())
+    }
+}
+
+#[allow(deprecated)]
+#[cfg(feature = "static_accounts")]
+impl AccountId {
+    pub fn test_account() -> Self {
+        Self::new_unvalidated("test")
+    }
+
+    pub fn system_account() -> Self {
+        Self::new_unvalidated("system")
     }
 
     pub fn is_system(&self) -> bool {
         self.as_ref() == "system"
-    }
-
-    pub fn system_account() -> Self {
-        "system".parse().unwrap()
-    }
-
-    pub fn test_account() -> Self {
-        "test".parse().unwrap()
     }
 }
 

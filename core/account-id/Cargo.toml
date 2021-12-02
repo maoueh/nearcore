@@ -10,8 +10,9 @@ description = "This crate contains the account ID primitive and its validation f
 
 [features]
 default = ["borsh", "serde"]
-internal_unstable = []
 deepsize_feature = ["deepsize"]
+internal_unstable = []
+static_accounts = ["internal_unstable"]
 
 [dependencies]
 borsh = { version = "0.9", optional = true }
