@@ -320,10 +320,6 @@ impl AccountId {
     pub fn system_account() -> Self {
         Self::new_unvalidated("system")
     }
-
-    pub fn is_system(&self) -> bool {
-        self.as_ref() == "system"
-    }
 }
 
 impl<T: ?Sized> AsRef<T> for AccountId
