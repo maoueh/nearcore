@@ -303,6 +303,7 @@ impl AccountId {
     /// let ƒelicia = AccountId::new_unvalidated("ƒelicia.near");
     /// assert!(AccountId::validate(ƒelicia.as_ref()).is_err());
     /// ```
+    #[doc(hidden)]
     #[cfg(feature = "internal_unstable")]
     #[deprecated(since = "#4440", note = "AccountId construction without validation is illegal")]
     pub fn new_unvalidated(account_id: impl Into<String>) -> Self {
@@ -310,6 +311,7 @@ impl AccountId {
     }
 }
 
+#[doc(hidden)]
 #[allow(deprecated)]
 #[cfg(feature = "static_accounts")]
 impl AccountId {
