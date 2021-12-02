@@ -324,7 +324,7 @@ mod tests {
             1,
             Some(shard_config),
         )));
-        let tracked_accounts = vec!["near".parse().unwrap(), "zoo".parse().unwrap()];
+        let tracked_accounts = vec![AccountId::near_account(), "zoo".parse().unwrap()];
         let tracker = ShardTracker::new(
             TrackedConfig::Accounts(tracked_accounts.clone()),
             epoch_manager.clone(),

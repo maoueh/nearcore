@@ -782,7 +782,7 @@ mod tests {
     #[test]
     fn test_create_account_valid_sub_account() {
         let account_id = "alice.near".parse().unwrap();
-        let predecessor_id = "near".parse().unwrap();
+        let predecessor_id = AccountId::near_account();
         let action_result = test_action_create_account(account_id, predecessor_id, 11);
         assert!(action_result.result.is_ok());
     }
@@ -808,7 +808,7 @@ mod tests {
     #[test]
     fn test_create_account_invalid_short_top_level() {
         let account_id = "bob".parse::<AccountId>().unwrap();
-        let predecessor_id = "near".parse::<AccountId>().unwrap();
+        let predecessor_id = AccountId::near_account();
         let action_result =
             test_action_create_account(account_id.clone(), predecessor_id.clone(), 11);
         assert_eq!(
@@ -827,7 +827,7 @@ mod tests {
     #[test]
     fn test_create_account_valid_short_top_level_len_allowed() {
         let account_id = "bob".parse().unwrap();
-        let predecessor_id = "near".parse().unwrap();
+        let predecessor_id = AccountId::near_account();
         let action_result = test_action_create_account(account_id, predecessor_id, 0);
         assert!(action_result.result.is_ok());
     }

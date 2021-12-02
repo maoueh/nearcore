@@ -315,6 +315,10 @@ impl AccountId {
 #[allow(deprecated)]
 #[cfg(feature = "static_accounts")]
 impl AccountId {
+    pub fn near_account() -> Self {
+        Self::new_unvalidated("near")
+    }
+
     pub fn test_account() -> Self {
         Self::new_unvalidated("test")
     }

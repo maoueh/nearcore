@@ -100,7 +100,7 @@ fn test_infinite_loop() {
         let request1 = NetworkRequests::Sync {
             peer_id: peer_id1.clone(),
             sync_data: SyncData::account(AnnounceAccount {
-                account_id: "near".parse().unwrap(),
+                account_id: AccountId::near_account(),
                 peer_id: peer_id1.clone(),
                 epoch_id: Default::default(),
                 signature: Default::default(),
@@ -109,7 +109,7 @@ fn test_infinite_loop() {
         let request2 = NetworkRequests::Sync {
             peer_id: peer_id1.clone(),
             sync_data: SyncData::account(AnnounceAccount {
-                account_id: "near".parse().unwrap(),
+                account_id: AccountId::near_account(),
                 peer_id: peer_id2.clone(),
                 epoch_id: Default::default(),
                 signature: Default::default(),

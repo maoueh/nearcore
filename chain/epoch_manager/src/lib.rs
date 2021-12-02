@@ -1528,7 +1528,7 @@ mod tests2 {
             vec![],
             change_stake(vec![("test1".parse().unwrap(), amount_staked)]),
             vec![],
-            reward(vec![("near".parse().unwrap(), 0)]),
+            reward(vec![(AccountId::near_account(), 0)]),
             0,
             4,
         );
@@ -1576,7 +1576,7 @@ mod tests2 {
             ]),
             vec![],
             // only the validator who produced the block in this epoch gets the reward since epoch length is 1
-            reward(vec![("test1".parse().unwrap(), 0), ("near".parse().unwrap(), 0)]),
+            reward(vec![("test1".parse().unwrap(), 0), (AccountId::near_account(), 0)]),
             0,
             4,
         );
@@ -1638,7 +1638,7 @@ mod tests2 {
             vec![
                 ("test1".parse().unwrap(), 0),
                 ("test2".parse().unwrap(), 0),
-                ("near".parse().unwrap(), 0),
+                (AccountId::near_account(), 0),
             ],
         );
         matches!(
@@ -1844,7 +1844,10 @@ mod tests2 {
         check_fishermen(epoch_info, &[]);
         check_stake_change(epoch_info, vec![("test1".parse().unwrap(), amount_staked)]);
         check_kickout(epoch_info, &[]);
-        check_reward(epoch_info, vec![("test2".parse().unwrap(), 0), ("near".parse().unwrap(), 0)]);
+        check_reward(
+            epoch_info,
+            vec![("test2".parse().unwrap(), 0), (AccountId::near_account(), 0)],
+        );
     }
 
     #[test]
@@ -1885,7 +1888,7 @@ mod tests2 {
             vec![
                 ("test1".parse().unwrap(), 0),
                 ("test2".parse().unwrap(), 0),
-                ("near".parse().unwrap(), 0),
+                (AccountId::near_account(), 0),
             ],
         );
 
@@ -1902,7 +1905,7 @@ mod tests2 {
             vec![
                 ("test1".parse().unwrap(), 0),
                 ("test2".parse().unwrap(), 0),
-                ("near".parse().unwrap(), 0),
+                (AccountId::near_account(), 0),
             ],
         );
 
@@ -1916,7 +1919,7 @@ mod tests2 {
         check_kickout(&epoch_info, &[]);
         check_reward(
             &epoch_info,
-            vec![("test2".parse().unwrap(), 0), ("near".parse().unwrap(), 0)],
+            vec![("test2".parse().unwrap(), 0), (AccountId::near_account(), 0)],
         );
     }
 
@@ -2171,7 +2174,7 @@ mod tests2 {
             num_blocks_per_year: 50,
             epoch_length,
             protocol_reward_rate: Rational::new(1, 10),
-            protocol_treasury_account: "near".parse().unwrap(),
+            protocol_treasury_account: AccountId::near_account(),
             online_min_threshold: Rational::new(90, 100),
             online_max_threshold: Rational::new(99, 100),
             num_seconds_per_year: 50,
@@ -2253,7 +2256,7 @@ mod tests2 {
             &epoch_info,
             vec![
                 ("test2".parse().unwrap(), test2_reward),
-                ("near".parse().unwrap(), protocol_reward),
+                (AccountId::near_account(), protocol_reward),
             ],
         );
         assert_eq!(epoch_info.minted_amount(), inflation);
@@ -2274,7 +2277,7 @@ mod tests2 {
             num_blocks_per_year: 50,
             epoch_length,
             protocol_reward_rate: Rational::new(1, 10),
-            protocol_treasury_account: "near".parse().unwrap(),
+            protocol_treasury_account: AccountId::near_account(),
             online_min_threshold: Rational::new(90, 100),
             online_max_threshold: Rational::new(99, 100),
             num_seconds_per_year: 50,
@@ -2362,7 +2365,7 @@ mod tests2 {
             vec![
                 ("test1".parse().unwrap(), test1_reward),
                 ("test2".parse().unwrap(), test2_reward),
-                ("near".parse().unwrap(), protocol_reward),
+                (AccountId::near_account(), protocol_reward),
             ],
         );
         assert_eq!(epoch_info.minted_amount(), inflation);
@@ -2382,7 +2385,7 @@ mod tests2 {
             num_blocks_per_year: 1_000_000,
             epoch_length,
             protocol_reward_rate: Rational::new(1, 10),
-            protocol_treasury_account: "near".parse().unwrap(),
+            protocol_treasury_account: AccountId::near_account(),
             online_min_threshold: Rational::new(90, 100),
             online_max_threshold: Rational::new(99, 100),
             num_seconds_per_year: 1_000_000,
@@ -2494,7 +2497,7 @@ mod tests2 {
             epoch_info,
             vec![
                 ("test2".parse().unwrap(), test2_reward),
-                ("near".parse().unwrap(), protocol_reward),
+                (AccountId::near_account(), protocol_reward),
             ],
         );
         assert_eq!(epoch_info.minted_amount(), inflation);
@@ -2538,7 +2541,7 @@ mod tests2 {
             vec![
                 ("test1".parse().unwrap(), 0),
                 ("test2".parse().unwrap(), 0),
-                ("near".parse().unwrap(), 0),
+                (AccountId::near_account(), 0),
             ],
         );
     }

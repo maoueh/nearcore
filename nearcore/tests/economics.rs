@@ -10,6 +10,7 @@ use near_client::test_utils::TestEnv;
 use near_crypto::{InMemorySigner, KeyType};
 use near_logger_utils::init_integration_logger;
 use near_primitives::transaction::SignedTransaction;
+use near_primitives::types::AccountId;
 use near_store::test_utils::create_test_store;
 use nearcore::config::GenesisExt;
 use testlib::fees_utils::FeeHelper;
@@ -95,7 +96,7 @@ fn test_burn_mint() {
         false,
         false,
     );
-    let near_balance = env.query_balance("near".parse().unwrap());
+    let near_balance = env.query_balance(AccountId::near_account());
     assert_eq!(calc_total_supply(&mut env), initial_total_supply);
     for i in 1..6 {
         env.produce_block(0, i);
@@ -130,7 +131,10 @@ fn test_burn_mint() {
     assert_eq!(block4.header().total_supply(), block3.header().total_supply() - half_transfer_cost);
     assert_eq!(block4.chunks()[0].balance_burnt(), half_transfer_cost);
     // Check that Protocol Treasury account got it's 1% as well.
-    assert_eq!(env.query_balance("near".parse().unwrap()), near_balance + epoch_total_reward / 10);
+    assert_eq!(
+        env.query_balance(AccountId::near_account()),
+        near_balance + epoch_total_reward / 10
+    );
     // Block 5: reward from previous block.
     let block5 = env.clients[0].chain.get_block_by_height(5).unwrap().clone();
     let prev_total_supply = block4.header().total_supply();

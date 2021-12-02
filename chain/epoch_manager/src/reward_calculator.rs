@@ -133,7 +133,7 @@ impl RewardCalculator {
 mod tests {
     use crate::reward_calculator::NUM_NS_IN_SECOND;
     use crate::RewardCalculator;
-    use near_primitives::types::{BlockChunkValidatorStats, ValidatorStats};
+    use near_primitives::types::{AccountId, BlockChunkValidatorStats, ValidatorStats};
     use near_primitives::version::PROTOCOL_VERSION;
     use num_rational::Rational;
     use std::collections::HashMap;
@@ -146,7 +146,7 @@ mod tests {
             num_blocks_per_year: 1000000,
             epoch_length,
             protocol_reward_rate: Rational::new(0, 1),
-            protocol_treasury_account: "near".parse().unwrap(),
+            protocol_treasury_account: AccountId::near_account(),
             online_min_threshold: Rational::new(9, 10),
             online_max_threshold: Rational::new(1, 1),
             num_seconds_per_year: 1000000,
@@ -185,7 +185,7 @@ mod tests {
         assert_eq!(
             result.0,
             vec![
-                ("near".parse().unwrap(), 0u128),
+                (AccountId::near_account(), 0u128),
                 ("test1".parse().unwrap(), 0u128),
                 ("test2".parse().unwrap(), 0u128)
             ]
@@ -203,7 +203,7 @@ mod tests {
             num_blocks_per_year: 1000,
             epoch_length,
             protocol_reward_rate: Rational::new(0, 10),
-            protocol_treasury_account: "near".parse().unwrap(),
+            protocol_treasury_account: AccountId::near_account(),
             online_min_threshold: Rational::new(9, 10),
             online_max_threshold: Rational::new(99, 100),
             num_seconds_per_year: 1000,
@@ -254,7 +254,7 @@ mod tests {
         assert_eq!(
             result.0,
             vec![
-                ("near".parse().unwrap(), 0),
+                (AccountId::near_account(), 0),
                 ("test1".parse().unwrap(), 1_666_666u128),
                 ("test2".parse().unwrap(), 3_333_333u128),
                 ("test3".parse().unwrap(), 0u128)
@@ -276,7 +276,7 @@ mod tests {
             // half a day
             epoch_length,
             protocol_reward_rate: Rational::new(1, 10),
-            protocol_treasury_account: "near".parse().unwrap(),
+            protocol_treasury_account: AccountId::near_account(),
             online_min_threshold: Rational::new(9, 10),
             online_max_threshold: Rational::new(1, 1),
             num_seconds_per_year: 60 * 60 * 24 * 365,
