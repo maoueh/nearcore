@@ -282,7 +282,7 @@ mod tests {
             num_seconds_per_year: 60 * 60 * 24 * 365,
         };
         let validator_block_chunk_stats = vec![(
-            "test".parse().unwrap(),
+            AccountId::test_account(),
             BlockChunkValidatorStats {
                 block_stats: ValidatorStats { produced: 43200, expected: 43200 },
                 chunk_stats: ValidatorStats { produced: 345600, expected: 345600 },
@@ -290,7 +290,7 @@ mod tests {
         )]
         .into_iter()
         .collect::<HashMap<_, _>>();
-        let validator_stake = vec![("test".parse().unwrap(), 500_000 * 10_u128.pow(24))]
+        let validator_stake = vec![(AccountId::test_account(), 500_000 * 10_u128.pow(24))]
             .into_iter()
             .collect::<HashMap<_, _>>();
         // some hypothetical large total supply (100b)

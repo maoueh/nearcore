@@ -233,8 +233,8 @@ fn produce_two_blocks() {
     run_actix(async {
         let count = Arc::new(AtomicUsize::new(0));
         setup_mock(
-            vec!["test".parse().unwrap()],
-            "test".parse().unwrap(),
+            vec![AccountId::test_account()],
+            AccountId::test_account(),
             true,
             false,
             Box::new(move |msg, _ctx, _| {
@@ -260,8 +260,8 @@ fn produce_blocks_with_tx() {
     init_test_logger();
     run_actix(async {
         let (client, view_client) = setup_mock(
-            vec!["test".parse().unwrap()],
-            "test".parse().unwrap(),
+            vec![AccountId::test_account()],
+            AccountId::test_account(),
             true,
             false,
             Box::new(move |msg, _ctx, _| {
@@ -581,7 +581,7 @@ fn invalid_blocks_common(is_requested: bool) {
     run_actix(async move {
         let mut ban_counter = 0;
         let (client, view_client) = setup_mock(
-            vec!["test".parse().unwrap()],
+            vec![AccountId::test_account()],
             "other".parse().unwrap(),
             true,
             false,
@@ -612,7 +612,7 @@ fn invalid_blocks_common(is_requested: bool) {
         actix::spawn(view_client.send(GetBlockWithMerkleTree::latest()).then(move |res| {
             let (last_block, mut block_merkle_tree) = res.unwrap().unwrap();
             let signer = InMemoryValidatorSigner::from_seed(
-                "test".parse().unwrap(),
+                AccountId::test_account(),
                 KeyType::ED25519,
                 "test",
             );
@@ -932,7 +932,7 @@ fn client_sync_headers() {
         let peer_info1 = PeerInfo::random();
         let peer_info2 = peer_info1.clone();
         let (client, _) = setup_mock(
-            vec!["test".parse().unwrap()],
+            vec![AccountId::test_account()],
             "other".parse().unwrap(),
             false,
             false,

@@ -179,6 +179,7 @@ mod tests {
     use near_crypto::KeyType;
     use near_primitives::hash::CryptoHash;
     use near_primitives::sharding::{PartialEncodedChunkV2, ShardChunkHeader, ShardChunkHeaderV2};
+    use near_primitives::types::AccountId;
     use near_primitives::validator_signer::InMemoryValidatorSigner;
 
     use crate::chunk_cache::EncodedChunksCache;
@@ -188,7 +189,7 @@ mod tests {
     fn test_cache_removal() {
         let mut cache = EncodedChunksCache::new();
         let signer =
-            InMemoryValidatorSigner::from_random("test".parse().unwrap(), KeyType::ED25519);
+            InMemoryValidatorSigner::from_random(AccountId::test_account(), KeyType::ED25519);
         let partial_encoded_chunk = PartialEncodedChunkV2 {
             header: ShardChunkHeader::V2(ShardChunkHeaderV2::new(
                 CryptoHash::default(),

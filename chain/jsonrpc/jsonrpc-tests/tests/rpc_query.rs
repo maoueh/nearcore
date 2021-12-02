@@ -13,7 +13,7 @@ use near_logger_utils::init_test_logger;
 use near_network::test_utils::WaitOrTimeoutActor;
 use near_primitives::account::{AccessKey, AccessKeyPermission};
 use near_primitives::hash::CryptoHash;
-use near_primitives::types::{BlockId, BlockReference, ShardId, SyncCheckpoint};
+use near_primitives::types::{AccountId, BlockId, BlockReference, ShardId, SyncCheckpoint};
 use near_primitives::views::QueryRequest;
 
 use near_jsonrpc_tests::{self as test_utils, test_with_client};
@@ -161,21 +161,21 @@ fn test_query_account() {
         let query_response_1 = client
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::latest(),
-                request: QueryRequest::ViewAccount { account_id: "test".parse().unwrap() },
+                request: QueryRequest::ViewAccount { account_id: AccountId::test_account() },
             })
             .await
             .unwrap();
         let query_response_2 = client
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::BlockId(BlockId::Height(0)),
-                request: QueryRequest::ViewAccount { account_id: "test".parse().unwrap() },
+                request: QueryRequest::ViewAccount { account_id: AccountId::test_account() },
             })
             .await
             .unwrap();
         let query_response_3 = client
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::BlockId(BlockId::Hash(block_hash)),
-                request: QueryRequest::ViewAccount { account_id: "test".parse().unwrap() },
+                request: QueryRequest::ViewAccount { account_id: AccountId::test_account() },
             })
             .await
             .unwrap();
@@ -224,7 +224,7 @@ fn test_query_access_keys() {
         let query_response = client
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::latest(),
-                request: QueryRequest::ViewAccessKeyList { account_id: "test".parse().unwrap() },
+                request: QueryRequest::ViewAccessKeyList { account_id: AccountId::test_account() },
             })
             .await
             .unwrap();
@@ -271,7 +271,7 @@ fn test_query_access_key() {
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::latest(),
                 request: QueryRequest::ViewAccessKey {
-                    account_id: "test".parse().unwrap(),
+                    account_id: AccountId::test_account(),
                     public_key: "ed25519:23vYngy8iL7q94jby3gszBnZ9JptpMf5Hgf7KVVa2yQ2"
                         .parse()
                         .unwrap(),
@@ -298,7 +298,7 @@ fn test_query_state() {
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::latest(),
                 request: QueryRequest::ViewState {
-                    account_id: "test".parse().unwrap(),
+                    account_id: AccountId::test_account(),
                     prefix: vec![].into(),
                 },
             })
@@ -322,7 +322,7 @@ fn test_query_call_function() {
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::latest(),
                 request: QueryRequest::CallFunction {
-                    account_id: "test".parse().unwrap(),
+                    account_id: AccountId::test_account(),
                     method_name: "method".to_string(),
                     args: vec![].into(),
                 },
@@ -350,7 +350,7 @@ fn test_query_contract_code() {
         let query_response = client
             .query(near_jsonrpc_primitives::types::query::RpcQueryRequest {
                 block_reference: BlockReference::latest(),
-                request: QueryRequest::ViewCode { account_id: "test".parse().unwrap() },
+                request: QueryRequest::ViewCode { account_id: AccountId::test_account() },
             })
             .await
             .unwrap();

@@ -152,12 +152,12 @@ mod test {
     fn test_total_supply_not_match() {
         let mut genesis = Genesis::default();
         genesis.config.validators = vec![AccountInfo {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             public_key: VALID_ED25519_RISTRETTO_KEY.parse().unwrap(),
             amount: 10,
         }];
         genesis.records = GenesisRecords(vec![StateRecord::Account {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             account: create_account(),
         }]);
         validate_genesis(&genesis);
@@ -168,12 +168,12 @@ mod test {
     fn test_invalid_staking_key() {
         let mut genesis = Genesis::default();
         genesis.config.validators = vec![AccountInfo {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             public_key: PublicKey::empty(KeyType::ED25519),
             amount: 10,
         }];
         genesis.records = GenesisRecords(vec![StateRecord::Account {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             account: create_account(),
         }]);
         validate_genesis(&genesis);
@@ -184,13 +184,13 @@ mod test {
     fn test_validator_not_match() {
         let mut genesis = Genesis::default();
         genesis.config.validators = vec![AccountInfo {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             public_key: VALID_ED25519_RISTRETTO_KEY.parse().unwrap(),
             amount: 100,
         }];
         genesis.config.total_supply = 110;
         genesis.records = GenesisRecords(vec![StateRecord::Account {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             account: create_account(),
         }]);
         validate_genesis(&genesis);
@@ -201,7 +201,7 @@ mod test {
     fn test_empty_validator() {
         let mut genesis = Genesis::default();
         genesis.records = GenesisRecords(vec![StateRecord::Account {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             account: create_account(),
         }]);
         validate_genesis(&genesis);
@@ -212,13 +212,16 @@ mod test {
     fn test_access_key_with_nonexistent_account() {
         let mut genesis = Genesis::default();
         genesis.config.validators = vec![AccountInfo {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             public_key: VALID_ED25519_RISTRETTO_KEY.parse().unwrap(),
             amount: 10,
         }];
         genesis.config.total_supply = 110;
         genesis.records = GenesisRecords(vec![
-            StateRecord::Account { account_id: "test".parse().unwrap(), account: create_account() },
+            StateRecord::Account {
+                account_id: AccountId::test_account(),
+                account: create_account(),
+            },
             StateRecord::AccessKey {
                 account_id: "test1".parse().unwrap(),
                 public_key: PublicKey::empty(KeyType::ED25519),
@@ -233,16 +236,22 @@ mod test {
     fn test_more_than_one_contract() {
         let mut genesis = Genesis::default();
         genesis.config.validators = vec![AccountInfo {
-            account_id: "test".parse().unwrap(),
+            account_id: AccountId::test_account(),
             public_key: VALID_ED25519_RISTRETTO_KEY.parse().unwrap(),
             amount: 10,
         }];
         genesis.config.total_supply = 110;
         genesis.records = GenesisRecords(vec![
-            StateRecord::Account { account_id: "test".parse().unwrap(), account: create_account() },
-            StateRecord::Contract { account_id: "test".parse().unwrap(), code: [1, 2, 3].to_vec() },
+            StateRecord::Account {
+                account_id: AccountId::test_account(),
+                account: create_account(),
+            },
             StateRecord::Contract {
-                account_id: "test".parse().unwrap(),
+                account_id: AccountId::test_account(),
+                code: [1, 2, 3].to_vec(),
+            },
+            StateRecord::Contract {
+                account_id: AccountId::test_account(),
                 code: [1, 2, 3, 4].to_vec(),
             },
         ]);

@@ -1814,7 +1814,7 @@ mod test {
         let runtime_adapter = Arc::new(KeyValueRuntime::new(create_test_store()));
         let network_adapter = Arc::new(MockPeerManagerAdapter::default());
         let mut shards_manager = ShardsManager::new(
-            Some("test".parse().unwrap()),
+            Some(AccountId::test_account()),
             runtime_adapter,
             network_adapter.clone(),
             TEST_SEED,
@@ -1858,7 +1858,7 @@ mod test {
         let runtime_adapter = Arc::new(KeyValueRuntime::new_with_validators(
             create_test_store(),
             vec![vec![
-                "test".parse().unwrap(),
+                AccountId::test_account(),
                 "test1".parse().unwrap(),
                 "test2".parse().unwrap(),
                 "test3".parse().unwrap(),
@@ -1870,13 +1870,13 @@ mod test {
         let network_adapter = Arc::new(MockPeerManagerAdapter::default());
         let mut chain_store = ChainStore::new(create_test_store(), 0);
         let mut shards_manager = ShardsManager::new(
-            Some("test".parse().unwrap()),
+            Some(AccountId::test_account()),
             runtime_adapter.clone(),
             network_adapter.clone(),
             TEST_SEED,
         );
         let signer =
-            InMemoryValidatorSigner::from_seed("test".parse().unwrap(), KeyType::ED25519, "test");
+            InMemoryValidatorSigner::from_seed(AccountId::test_account(), KeyType::ED25519, "test");
         let mut rs = ReedSolomonWrapper::new(4, 10);
         let shard_layout = runtime_adapter.get_shard_layout(&EpochId::default()).unwrap();
         let (encoded_chunk, proof) = shards_manager

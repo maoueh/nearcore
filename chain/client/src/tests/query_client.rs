@@ -31,12 +31,12 @@ fn query_client() {
     init_test_logger();
     run_actix(async {
         let (_, view_client) =
-            setup_no_network(vec!["test".parse().unwrap()], "other".parse().unwrap(), true, true);
+            setup_no_network(vec![AccountId::test_account()], "other".parse().unwrap(), true, true);
         actix::spawn(
             view_client
                 .send(Query::new(
                     BlockReference::latest(),
-                    QueryRequest::ViewAccount { account_id: "test".parse().unwrap() },
+                    QueryRequest::ViewAccount { account_id: AccountId::test_account() },
                 ))
                 .then(|res| {
                     match res.unwrap().unwrap().kind {
@@ -56,10 +56,14 @@ fn query_client() {
 fn query_status_not_crash() {
     init_test_logger();
     run_actix(async {
-        let (client, view_client) =
-            setup_no_network(vec!["test".parse().unwrap()], "other".parse().unwrap(), true, false);
+        let (client, view_client) = setup_no_network(
+            vec![AccountId::test_account()],
+            "other".parse().unwrap(),
+            true,
+            false,
+        );
         let signer =
-            InMemoryValidatorSigner::from_seed("test".parse().unwrap(), KeyType::ED25519, "test");
+            InMemoryValidatorSigner::from_seed(AccountId::test_account(), KeyType::ED25519, "test");
         actix::spawn(view_client.send(GetBlockWithMerkleTree::latest()).then(move |res| {
             let (block, mut block_merkle_tree) = res.unwrap().unwrap();
             let header: BlockHeader = block.header.clone().into();
@@ -112,9 +116,13 @@ fn query_status_not_crash() {
 fn test_execution_outcome_for_chunk() {
     init_test_logger();
     run_actix(async {
-        let (client, view_client) =
-            setup_no_network(vec!["test".parse().unwrap()], "test".parse().unwrap(), true, false);
-        let signer = InMemorySigner::from_seed("test".parse().unwrap(), KeyType::ED25519, "test");
+        let (client, view_client) = setup_no_network(
+            vec![AccountId::test_account()],
+            AccountId::test_account(),
+            true,
+            false,
+        );
+        let signer = InMemorySigner::from_seed(AccountId::test_account(), KeyType::ED25519, "test");
 
         actix::spawn(async move {
             let block_hash =
@@ -122,7 +130,7 @@ fn test_execution_outcome_for_chunk() {
 
             let transaction = SignedTransaction::send_money(
                 1,
-                "test".parse().unwrap(),
+                AccountId::test_account(),
                 AccountId::near_account(),
                 &signer,
                 10,
@@ -143,7 +151,7 @@ fn test_execution_outcome_for_chunk() {
             let execution_outcome = view_client
                 .send(TxStatus {
                     tx_hash,
-                    signer_account_id: "test".parse().unwrap(),
+                    signer_account_id: AccountId::test_account(),
                     fetch_receipt: false,
                 })
                 .await
@@ -177,11 +185,11 @@ fn test_execution_outcome_for_chunk() {
 fn test_state_request() {
     run_actix(async {
         let view_client = setup_only_view(
-            vec![vec!["test".parse().unwrap()]],
+            vec![vec![AccountId::test_account()]],
             1,
             1,
             10000000,
-            "test".parse().unwrap(),
+            AccountId::test_account(),
             true,
             200,
             400,

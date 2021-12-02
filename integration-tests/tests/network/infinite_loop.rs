@@ -21,6 +21,7 @@ use near_network_primitives::types::{
 };
 use near_primitives::block::GenesisId;
 use near_primitives::network::{AnnounceAccount, PeerId};
+use near_primitives::types::AccountId;
 use near_store::test_utils::create_test_store;
 
 /// Make Peer Manager with mocked client ready to accept any announce account.
